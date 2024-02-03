@@ -141,7 +141,7 @@ class MyViewModel @Inject constructor(private val repository: MyRepository) : Vi
         //   LIST_TYPE_VEHICLE = listOf("tank", "plane", "ship")
         listaVehiculos.value
         when (silueta) {
-            "tank" -> {
+            LIST_TYPE_VEHICLE[0] -> {
                 for (vehicle in listaVehiculos.value) {
                     if (vehicle.type !in LIST_TYPE_VEHICLE_TANK) {
                         eliminarVehiculo(vehicle)
@@ -149,7 +149,7 @@ class MyViewModel @Inject constructor(private val repository: MyRepository) : Vi
                 }
             }
 
-            "plane" -> {
+            LIST_TYPE_VEHICLE[1] -> {
                 for (vehicle in listaVehiculos.value) {
                     if (vehicle.type !in LIST_TYPE_VEHICLE_AIR) {
                         eliminarVehiculo(vehicle)
@@ -157,7 +157,7 @@ class MyViewModel @Inject constructor(private val repository: MyRepository) : Vi
                 }
             }
 
-            "ship" -> {
+            LIST_TYPE_VEHICLE[2] -> {
                 for (vehicle in listaVehiculos.value) {
                     if (vehicle.type !in LIST_TYPE_VEHICLE_NAVAL) {
                         eliminarVehiculo(vehicle)

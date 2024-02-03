@@ -46,10 +46,13 @@ object Constants {
         "tankdestroyer",
         "spaa"
     )
-    const val IMAGEN_BASE_URL = "http://wtvehiclesapi.sgambe.serv00.net/assets/images/yak-7b.png"
-    const val IMAGEN_TREE_BASE_URL =
-        "http://wtvehiclesapi.sgambe.serv00.net/assets/techtrees/a_7e.png"
 
 
-   // https://github.com/Sgambe33/WTVehiclesAPI
+
+    //***************  INFO **********************//
+//    const val IMAGEN_BASE_URL = "http://wtvehiclesapi.sgambe.serv00.net/assets/images/yak-7b.png"
+//    const val IMAGEN_TREE_BASE_URL =
+//        "http://wtvehiclesapi.sgambe.serv00.net/assets/techtrees/a_7e.png"
+
+//    https://github.com/Sgambe33/WTVehiclesAPI
 }
