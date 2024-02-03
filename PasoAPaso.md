@@ -45,3 +45,5 @@ imagenes
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
 ViewModel (posiblemente deprecada)
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-runtime-ktx" }
+
+
