@@ -15,8 +15,11 @@ import com.example.warthundervehicles.utils.Constants.LIST_TYPE_VEHICLE
 import com.example.warthundervehicles.utils.Constants.LIST_TYPE_VEHICLE_AIR
 import com.example.warthundervehicles.utils.Constants.LIST_TYPE_VEHICLE_NAVAL
 import com.example.warthundervehicles.utils.Constants.LIST_TYPE_VEHICLE_TANK
+import com.example.warthundervehicles.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
 import toVehicleItem
 import javax.inject.Inject
@@ -36,9 +39,15 @@ class MyViewModel @Inject constructor(private val repository: MyRepository) : Vi
     private val _listaAllVehiculos = mutableStateOf<List<VehicleItem>>(emptyList())
     val listaAllVehiculos: MutableState<List<VehicleItem>> get() = _listaAllVehiculos
 
+    private val _selectedVehicle = mutableStateOf<RemoteVehiclesItem?>(null)
+    val selectedVehicle: MutableState<RemoteVehiclesItem?> get() = _selectedVehicle
+
+    private var _selecVehicle = mutableStateOf<VehicleItem?>(null)
+    val selecVehicle: MutableState<VehicleItem?> get() = _selecVehicle
+
     init {
         //  fetchVehiclesForCountryAndRank()
-    //    getAllVehicles()
+        //    getAllVehicles()
     }
 
     private fun getAllVehicles() {
@@ -58,6 +67,7 @@ class MyViewModel @Inject constructor(private val repository: MyRepository) : Vi
         }
     }
 
+
     private suspend fun fetchVehiclesForCountryAndRank(country: String, rank: Int) {
         try {
             val response = repository.getAllVehiclesCountryRank(1000, country, rank)
@@ -71,14 +81,28 @@ class MyViewModel @Inject constructor(private val repository: MyRepository) : Vi
         }
     }
 
-    private fun handleSuccessfulResponse(response: Response<List<RemoteVehiclesItem>>) {
-        _myListaVehiculosRemotos.value = response.body() ?: emptyList()
-        if (_myListaVehiculosRemotos.value.isNotEmpty()) {
-            processVehiclesList()
+    private fun <T> handleSuccessfulResponse(response: Response<T>): Unit {
+        if (response.isSuccessful) {
+            val data = response.body()
+            if (data is RemoteVehiclesItem) {
+                // Manejar el caso de RemoteVehiclesItem
+                _selectedVehicle.value = response.body() as RemoteVehiclesItem
+                _selecVehicle.value=  _selectedVehicle.value!!.toVehicleItem()
+            } else if (data is List<*>) {
+                _myListaVehiculosRemotos.value = (response.body()) as List<RemoteVehiclesItem>
+                if (_myListaVehiculosRemotos.value.isNotEmpty()) {
+                    processVehiclesList()
+                } else {
+                    Log.e("MyTag", "Empty vehicle list")
+                }
+
+            }
         } else {
-            Log.e("MyTag", "Empty vehicle list")
+            Log.e("MyTag", "Manejar el caso de respuesta no exitosa")
+            // Manejar el caso de respuesta no exitosa
         }
     }
+
 
     private fun handleErrorResponse(response: Response<List<RemoteVehiclesItem>>) {
         Log.e("MyTag", "Error fetching vehicle list. Code: ${response.code()}")
@@ -179,5 +203,24 @@ class MyViewModel @Inject constructor(private val repository: MyRepository) : Vi
         val listaMutable = _listaVehiculos.value.toMutableList()
         listaMutable.removeAt(indiceAEliminar)
         _listaVehiculos.value = listaMutable
+    }
+
+
+
+    suspend fun getVehicle(identifier: String): Response<RemoteVehiclesItem> {
+
+        try {
+            val response = repository.getVehicle(identifier = identifier)
+            if (response.isSuccessful) {
+                handleSuccessfulResponse(response)
+            } else {
+            //    handleErrorResponse(response)
+                Log.e("MyTag", "Error fetching vehicle: ${response.code()}")
+            }
+            return response
+        } catch (e: Exception) {
+            handleException("Error fetching vehicle", e)
+          return  Response.error(500, "Internal Server Error".toResponseBody(null))
+        }
     }
 }

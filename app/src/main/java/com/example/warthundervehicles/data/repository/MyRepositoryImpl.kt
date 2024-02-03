@@ -3,13 +3,15 @@ package com.example.warthundervehicles.data.repository
 
 import com.example.warthundervehicles.data.remote.MyApi
 import com.example.warthundervehicles.data.remote.apimodels.RemoteVehiclesItem
+import com.example.warthundervehicles.data.remote.apimodels.Vehicles
+import com.example.warthundervehicles.utils.Resource
 import retrofit2.Response
 
 
 class MyRepositoryImpl(private val myApi: MyApi) : MyRepository {
 
 
-    override suspend fun getVehicle(identifier: String): RemoteVehiclesItem {
+    override suspend fun getVehicle(identifier: String):Response<RemoteVehiclesItem>  {
         return myApi.getVehicle(identifier)
     }
 
@@ -29,7 +31,7 @@ class MyRepositoryImpl(private val myApi: MyApi) : MyRepository {
         country: String,
         rank: Int
     ): Response<List<RemoteVehiclesItem>> {
-       return myApi.getAllVehiclesCountryRank(limit,country,rank)
+        return myApi.getAllVehiclesCountryRank(limit,country,rank)
     }
     override suspend fun getAllVehiclesCountry(
         limit: Int,

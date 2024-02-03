@@ -39,11 +39,22 @@ retrofit = "2.9.0"
 ### Comprobar que funciona y no peta; Vigilar versiones a nivel app-modulo
 
 ## Otras dependencias
-Navegacion
-androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
+
 imagenes
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
 ViewModel (posiblemente deprecada)
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-runtime-ktx" }
 
 
+# Navegacion
+
+## Añadir dependencias
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
+
+## Crear paquete y ficheros para screens (../ui/screens/)
+## Crear paquete navigation
+### Crear sealed clase  Routes
+crearemos una sealed class que recibe route de tipo String;
+estará formada por objetos (cada screen) de tipo AppScreen con un string como ruta
+### Crear AppNavigation
+Sera de tipo composable y en el NavHost Definimos las pantallas a donde navegamos
