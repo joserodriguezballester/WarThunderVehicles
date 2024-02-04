@@ -47,7 +47,16 @@ object Constants {
         "spaa"
     )
 
-
+    val LIST_PROPERTIES_VEHICLE = listOf(
+        "aerodynamics",
+        "ammo",
+        "engine",
+        "lock",
+        "losLock",
+        "weapons",
+        "presets",
+        "sensors"
+    )
 
     //***************  INFO **********************//
 //    const val IMAGEN_BASE_URL = "http://wtvehiclesapi.sgambe.serv00.net/assets/images/yak-7b.png"
