@@ -64,6 +64,9 @@ dependencies {
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
   //  implementation (libs.androidx.runtime.livedata)
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.1.0")
+
 
     //Hilt
     implementation(libs.hilt.android)

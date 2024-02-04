@@ -1,15 +1,15 @@
 package com.example.warthundervehicles.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -32,14 +32,50 @@ import java.util.Locale
 
 @Composable
 fun DetailScreen(navController: NavController, identifier: String) {
-    Log.i("MyTag", "DetailScreen: $identifier")
     val viewModel = hiltViewModel<MyViewModel>()
     val vehiculo by produceState<Response<RemoteVehiclesItem>?>(initialValue = null) {
         value = viewModel.getVehicle(identifier)
     }
-    val vehicle=viewModel.selecVehicle.value
-    if (vehicle != null) {
-        VehicleSelectedCard(vehicle = vehicle)
+    val vehicle = viewModel.selecVehicle.value
+    Column {
+        if (vehicle != null) {
+            VehicleSelectedCard(vehicle = vehicle)
+        }
+        VehicleDetails(viewModel)
+    }
+}
+
+@Composable
+fun VehicleDetails(viewModel: MyViewModel) {
+    val groupedProperties by viewModel.groupedProperties.observeAsState(emptyMap())
+    val groupVisibilityMap = remember { mutableStateMapOf<String, MutableState<Boolean>>() }
+
+    LazyColumn {
+        groupedProperties.forEach { (groupName, properties) ->
+            // Crear un estado para manejar la visibilidad del grupo
+            val isGroupVisible = groupVisibilityMap.getOrPut(groupName) { mutableStateOf(false) }
+            // Aquí puedes mostrar cada grupo como un botón
+            item {
+                Button(
+                    onClick = { isGroupVisible.value = !isGroupVisible.value },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    Text(text = if (isGroupVisible.value) "Hide $groupName" else "Show $groupName")
+                }
+            }
+
+            // Mostrar propiedades solo si el grupo está visible
+            if (isGroupVisible.value) {
+                properties.forEach { (propertyName, propertyValue) ->
+                    item {
+                        // Aquí puedes mostrar cada propiedad del grupo
+                        Text(text = "$propertyName: $propertyValue")
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -113,3 +149,5 @@ fun VehicleSelectedCard(vehicle: VehicleItem) {
         }
     }
 }
+
+

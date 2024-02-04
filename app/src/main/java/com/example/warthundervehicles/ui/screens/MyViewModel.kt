@@ -4,25 +4,27 @@ package com.example.warthundervehicles.ui.screens
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.warthundervehicles.data.models.VehicleItem
 import com.example.warthundervehicles.data.remote.apimodels.RemoteVehiclesItem
 import com.example.warthundervehicles.data.repository.MyRepository
+import com.example.warthundervehicles.utils.Constants
 import com.example.warthundervehicles.utils.Constants.LIST_COUNTRY
 import com.example.warthundervehicles.utils.Constants.LIST_RANK
 import com.example.warthundervehicles.utils.Constants.LIST_TYPE_VEHICLE
 import com.example.warthundervehicles.utils.Constants.LIST_TYPE_VEHICLE_AIR
 import com.example.warthundervehicles.utils.Constants.LIST_TYPE_VEHICLE_NAVAL
 import com.example.warthundervehicles.utils.Constants.LIST_TYPE_VEHICLE_TANK
-import com.example.warthundervehicles.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
 import toVehicleItem
 import javax.inject.Inject
+import kotlin.reflect.full.declaredMemberProperties
 
 @HiltViewModel
 class MyViewModel @Inject constructor(private val repository: MyRepository) : ViewModel() {
@@ -87,7 +89,8 @@ class MyViewModel @Inject constructor(private val repository: MyRepository) : Vi
             if (data is RemoteVehiclesItem) {
                 // Manejar el caso de RemoteVehiclesItem
                 _selectedVehicle.value = response.body() as RemoteVehiclesItem
-                _selecVehicle.value=  _selectedVehicle.value!!.toVehicleItem()
+                _selecVehicle.value = _selectedVehicle.value!!.toVehicleItem()
+                groupPropertiesByClassAndPrefix(vehicle = selectedVehicle.value!!)
             } else if (data is List<*>) {
                 _myListaVehiculosRemotos.value = (response.body()) as List<RemoteVehiclesItem>
                 if (_myListaVehiculosRemotos.value.isNotEmpty()) {
@@ -206,7 +209,6 @@ class MyViewModel @Inject constructor(private val repository: MyRepository) : Vi
     }
 
 
-
     suspend fun getVehicle(identifier: String): Response<RemoteVehiclesItem> {
 
         try {
@@ -214,13 +216,52 @@ class MyViewModel @Inject constructor(private val repository: MyRepository) : Vi
             if (response.isSuccessful) {
                 handleSuccessfulResponse(response)
             } else {
-            //    handleErrorResponse(response)
+                //    handleErrorResponse(response)
                 Log.e("MyTag", "Error fetching vehicle: ${response.code()}")
             }
             return response
         } catch (e: Exception) {
             handleException("Error fetching vehicle", e)
-          return  Response.error(500, "Internal Server Error".toResponseBody(null))
+            return Response.error(500, "Internal Server Error".toResponseBody(null))
         }
     }
+
+    private val _groupedProperties = MutableLiveData<Map<String, List<Pair<String, Any>>>>()
+    val groupedProperties: LiveData<Map<String, List<Pair<String, Any>>>> = _groupedProperties
+
+
+    fun groupPropertiesByClassAndPrefix(vehicle: RemoteVehiclesItem) {
+        val groupedMap = mutableMapOf<String, MutableList<Pair<String, Any>>>()
+
+        vehicle.javaClass.kotlin.declaredMemberProperties.forEach { property ->
+            val propertyName = property.name
+            val propertyValue = property.get(vehicle)
+
+            // Agrupar por clase
+            //   val className = propertyValue?.javaClass?.simpleName ?: "Other"
+            if (propertyName in Constants.LIST_PROPERTIES_VEHICLE)
+                groupedMap.getOrPut(propertyName) { mutableListOf() }
+                    .add((propertyName to propertyValue) as Pair<String, Any>)
+
+            // Agrupar por prefijo "train" o "repair"
+            if (propertyName.startsWith("train")) {
+                groupedMap.getOrPut("Train") { mutableListOf() }
+                    .add((propertyName to propertyValue) as Pair<String, Any>)
+            }
+            // Agrupar por prefijo "train" o "repair"
+            if (propertyName.startsWith("repair")) {
+                groupedMap.getOrPut("RepairGroup") { mutableListOf() }
+                    .add((propertyName to propertyValue) as Pair<String, Any>)
+            }
+            // Agrupar por características en el nombre (por ejemplo, "Br")
+            if (propertyName.contains("Br")) {
+                groupedMap.getOrPut("BrGroup") { mutableListOf() }
+                    .add((propertyName to propertyValue) as Pair<String, Any>)
+            }
+        }
+
+        _groupedProperties.value = groupedMap
+    }
+
+
 }
