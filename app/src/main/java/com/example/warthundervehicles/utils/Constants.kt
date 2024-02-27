@@ -37,7 +37,8 @@ object Constants {
         "navalferrybarge",
         "destroyer",
         "torpedogunboat",
-        "ship"
+        "ship",
+        "gunboat"
     )
     val LIST_TYPE_VEHICLE_TANK = listOf(
         "lighttank",
@@ -57,11 +58,67 @@ object Constants {
         "presets",
         "sensors"
     )
+    val LIST_CLASS_VEHICLE = listOf(
+        "Aerodynamics",
+        "Ammo",
+        "Engine",
+        "Lock",
+        "LosLock",
+        "WeaponX",
+        "Preset",
+        "Sensors"
+    )
 
-    //***************  INFO **********************//
+    val LIST_AERODYNAMICS_PROPERTIES = listOf(
+        "emptyWeight",
+        "lenght",
+        "maxAltitude",
+        "maxSpeedAtAlt",
+        "maxTakeoffWeight",
+        "runwayLenRequired",
+        "turnTime",
+        "wingArea",
+        "wingspan"
+    )
+
+    // Crear un listado con los textos correspondientes a cada propiedad
+    val LIST_AERODYNAMICS_TEXTS = mapOf(
+        "emptyWeight" to "Peso vacío",
+        "lenght" to "Longitud",
+        "maxAltitude" to "Altitud máxima",
+        "maxSpeedAtAlt" to "Velocidad máxima a altitud",
+        "maxTakeoffWeight" to "Peso máximo al despegue",
+        "runwayLenRequired" to "Longitud de pista requerida",
+        "turnTime" to "Tiempo de giro",
+        "wingArea" to "Área de alas",
+        "wingspan" to "Envergadura"
+    )
+    val defaultText = "Desconocido"
+    // Crear un listado con los unidades correspondientes a cada propiedad
+    val LIST_AERODYNAMICS_UNITS = mapOf(
+        "emptyWeight" to "kg",
+        "lenght" to "m",
+        "maxAltitude" to "m",
+        "maxSpeedAtAlt" to "m/s",
+        "maxTakeoffWeight" to "kg",
+        "runwayLenRequired" to "m",
+        "turnTime" to "s",
+        "wingArea" to "m²",
+        "wingspan" to "metros"
+    )
+    val defaultUnit = "."
+
+
+
+
+
+
+
+}
+
+//***************  INFO **********************//
 //    const val IMAGEN_BASE_URL = "http://wtvehiclesapi.sgambe.serv00.net/assets/images/yak-7b.png"
 //    const val IMAGEN_TREE_BASE_URL =
 //        "http://wtvehiclesapi.sgambe.serv00.net/assets/techtrees/a_7e.png"
 
 //    https://github.com/Sgambe33/WTVehiclesAPI
-}

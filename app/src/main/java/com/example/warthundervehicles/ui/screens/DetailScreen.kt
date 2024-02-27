@@ -1,24 +1,31 @@
 package com.example.warthundervehicles.ui.screens
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import android.util.Log
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
+
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -27,55 +34,121 @@ import coil.request.ImageRequest
 import com.example.warthundervehicles.data.models.VehicleItem
 import com.example.warthundervehicles.data.remote.apimodels.RemoteVehiclesItem
 import com.example.warthundervehicles.utils.customToString
+import com.example.warthundervehicles.utils.getTextForProperty
+import com.example.warthundervehicles.utils.getUnitForProperty
+import com.example.warthundervehicles.utils.textoSinDecimales
 import retrofit2.Response
 import java.util.Locale
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+
 
 @Composable
-fun DetailScreen(navController: NavController, identifier: String) {
-    val viewModel = hiltViewModel<MyViewModel>()
+fun DetailScreen(navController: NavController,viewModel: MyViewModel, identifier: String) {
+  //  val viewModel = hiltViewModel<MyViewModel>()
     val vehiculo by produceState<Response<RemoteVehiclesItem>?>(initialValue = null) {
         value = viewModel.getVehicle(identifier)
     }
     val vehicle = viewModel.selecVehicle.value
+    val aerodynamics = viewModel.selecVehicle.value?.aerodynamics
+    viewModel.getFilteredListBySearch()
     Column {
         if (vehicle != null) {
             VehicleSelectedCard(vehicle = vehicle)
-        }
-        VehicleDetails(viewModel)
-    }
-}
-
-@Composable
-fun VehicleDetails(viewModel: MyViewModel) {
-    val groupedProperties by viewModel.groupedProperties.observeAsState(emptyMap())
-    val groupVisibilityMap = remember { mutableStateMapOf<String, MutableState<Boolean>>() }
-
-    LazyColumn {
-        groupedProperties.forEach { (groupName, properties) ->
-            // Crear un estado para manejar la visibilidad del grupo
-            val isGroupVisible = groupVisibilityMap.getOrPut(groupName) { mutableStateOf(false) }
-            // Aquí puedes mostrar cada grupo como un botón
-            item {
-                Button(
-                    onClick = { isGroupVisible.value = !isGroupVisible.value },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                ) {
-                    Text(text = if (isGroupVisible.value) "Hide $groupName" else "Show $groupName")
-                }
+            SearchBar(searchText = viewModel.searchText,viewModel,vehicle) { newSearchText ->
+                viewModel.searchText = newSearchText
+                viewModel.getFilteredListBySearch()
             }
+        }
+//        if (viewModel.showVehicleDetails) {
+//            VehicleDetails(viewModel)
+//        }
+//        if (viewModel.showGroupContent) {
+//            GroupContent(viewModel)
+//        }
+        Spacer(modifier = Modifier.height(12.dp))
+        // Otros componibles aquí
 
-            // Mostrar propiedades solo si el grupo está visible
-            if (isGroupVisible.value) {
-                properties.forEach { (propertyName, propertyValue) ->
-                    item {
-                        // Aquí puedes mostrar cada propiedad del grupo
-                        Text(text = "$propertyName: $propertyValue")
+
+        LazyColumn {
+            items(viewModel.listaFiltradaVehiculos.value) { vehiculo ->
+                Text(text = vehiculo.name+"::"+vehiculo.arcadeBr)
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+        }
+
+
+        if (false) {
+            if (aerodynamics != null) {
+                aerodynamics.javaClass.declaredFields.forEach { field ->
+                    field.isAccessible = true
+                    var propertyName = field.name
+                    var propertyValue = field.get(aerodynamics).toString().toDouble()
+                    var propertyUnits = getUnitForProperty(propertyName)
+                    var propertyHigh = propertyValue
+                    if (field.name == "maxSpeedAtAlt") {
+                        if (vehicle != null) {
+                            propertyHigh = propertyValue
+                            propertyValue = vehicle.engine.maxSpeed.toDouble()
+                            propertyUnits = "m/s"
+                        }
+                    }
+                    Log.i("MyTag", "Propiedad: **$propertyName**, Valor: **$propertyValue**")
+                    if (propertyValue != 0.0) {
+                        VehicleStat(
+                            propertyName,
+                            propertyValue,
+                            propertyUnits,
+                            propertyHigh,
+                            propertyValue + 10,
+                            Color.Yellow,
+
+                            )
+                        Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
             }
         }
+
+    }
+}
+
+@Composable
+fun SearchBar(searchText: String,viewModel: MyViewModel,vehicle: VehicleItem, onSearchTextChanged: (String) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Default.Build,
+            contentDescription = "Filtro",
+            modifier = Modifier
+                .size(24.dp)
+                .clickable {
+                    Log.i("MyTag", "filtrando...**")
+                    // Lógica para manejar el clic en el icono de filtro
+                    viewModel.getFilteredListByArcadeRB(vehicle)
+                }
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        BasicTextField(
+            value = searchText,
+            onValueChange = { newSearchText ->
+                onSearchTextChanged(newSearchText)
+            },
+            textStyle = TextStyle(color = Color.Black),
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(1.dp, Color.Gray, shape = RoundedCornerShape(4.dp))
+                .padding(8.dp)
+        )
     }
 }
 
@@ -150,4 +223,161 @@ fun VehicleSelectedCard(vehicle: VehicleItem) {
     }
 }
 
+@Composable
+fun VehicleDetails(viewModel: MyViewModel) {
+    val groupedProperties by viewModel.groupedProperties.observeAsState(emptyMap())
+    LazyVerticalGrid(GridCells.Fixed(2)) {
+        groupedProperties.forEach { (groupName, properties) ->
+            var isVisible = true
+
+            properties.forEach { (propertyValue) ->
+                if (viewModel.isGrupoVacio(propertyValue)) {
+                    isVisible = false
+                } else if (viewModel.isAllPropertiesNullOrZeroOrFalse(propertyValue)) {
+                    isVisible = false
+                }
+            }
+            if (isVisible) {
+                item {
+                    Button(
+                        onClick = {
+                            viewModel.nameGrupo = groupName
+                            viewModel.showGroupContent = !viewModel.showGroupContent
+                            viewModel.showVehicleDetails = false
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Text(text = groupName.uppercase())
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun GroupContent(viewModel: MyViewModel) {
+    val groupName = viewModel.nameGrupo
+    val properties = viewModel.groupedProperties.value?.get(groupName)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = Color.Red)
+            .padding(16.dp)
+    ) {
+        Text(
+            text = groupName.uppercase(Locale.ROOT),
+            style = TextStyle(fontWeight = FontWeight.Bold)
+        )
+
+        properties?.forEach { (propertyName, propertyValue) ->
+            Log.i("MyTag", "valor::$propertyName: $propertyValue")
+            Text(text = "$propertyName: $propertyValue")
+        }
+    }
+    Button(
+        onClick = {
+            viewModel.showVehicleDetails = true
+            viewModel.showGroupContent = false
+        },
+        modifier = Modifier.padding(top = 8.dp),
+        shape = RoundedCornerShape(10.dp)
+    ) {
+        Text(text = "Ocultar")
+    }
+}
+
+
+@Composable
+fun VehicleStat(
+    statName: String,
+    statValue: Double,
+    statUnit: String,
+    propertyHigh: Double,
+    statMaxValue: Double,
+    statColor: Color,
+    height: Dp = 28.dp,
+    animDuration: Int = 1000,
+    animDelay: Int = 0,
+) {
+    var animationPlayed by remember {
+        mutableStateOf(false)
+    }
+    val curPercent = animateFloatAsState(
+        targetValue = if (animationPlayed) {
+            if (statValue != 0.0) {
+                (statValue / statMaxValue).toFloat() // Aquí se convierte el resultado a Float
+            } else {
+                100f
+            }
+        } else {
+            0f
+        },
+        animationSpec = tween(
+            animDuration,
+            animDelay
+        ), label = ""
+    )
+    LaunchedEffect(key1 = true) {
+        animationPlayed = true
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(height)
+            .clip(CircleShape)
+            .background(
+                if (isSystemInDarkTheme()) {
+                    Color(0xFF505050)
+                } else {
+                    Color.LightGray
+                }
+            )
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(curPercent.value)
+                .clip(CircleShape)
+                .background(statColor)
+                .padding(horizontal = 8.dp)
+        ) {
+            Text(
+                text = if (statName == "maxSpeedAtAlt") {
+                    getTextForProperty(statName) + " " + textoSinDecimales(propertyHigh) + " m"
+                } else {
+                    getTextForProperty(statName)
+                },
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = textoSinDecimales(statValue) + " " + statUnit,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+@Composable
+fun LazyColumnExample(items: List<String>) {
+ //   val items = (1..100).map { "Elemento $it" } // Crea una lista de 100 elementos
+
+    LazyColumn {
+        itemsIndexed(items) { index, item ->
+            if (index < 3) {
+                // Muestra los primeros 3 elementos
+                Text(
+                    text = item,
+                    modifier = Modifier
+                        .padding(8.dp)
+                )
+            } else {
+                // Oculta los elementos restantes
+                Spacer(modifier = Modifier.height(0.dp))
+            }
+        }
+    }
+}
 

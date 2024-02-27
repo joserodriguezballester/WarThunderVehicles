@@ -3,7 +3,9 @@ package com.example.warthundervehicles.ui.screens
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,6 +14,7 @@ import com.example.warthundervehicles.data.models.VehicleItem
 import com.example.warthundervehicles.data.remote.apimodels.RemoteVehiclesItem
 import com.example.warthundervehicles.data.repository.MyRepository
 import com.example.warthundervehicles.utils.Constants
+import com.example.warthundervehicles.utils.Constants.LIST_CLASS_VEHICLE
 import com.example.warthundervehicles.utils.Constants.LIST_COUNTRY
 import com.example.warthundervehicles.utils.Constants.LIST_RANK
 import com.example.warthundervehicles.utils.Constants.LIST_TYPE_VEHICLE
@@ -24,12 +27,14 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
 import toVehicleItem
 import javax.inject.Inject
+import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
 
 @HiltViewModel
 class MyViewModel @Inject constructor(private val repository: MyRepository) : ViewModel() {
 
 
+    lateinit var nameGrupo: String
     private val _myListaVehiculosRemotos = mutableStateOf<List<RemoteVehiclesItem>>(emptyList())
     val myListaVehiculosRemotos: MutableState<List<RemoteVehiclesItem>> get() = _myListaVehiculosRemotos
 
@@ -47,12 +52,25 @@ class MyViewModel @Inject constructor(private val repository: MyRepository) : Vi
     private var _selecVehicle = mutableStateOf<VehicleItem?>(null)
     val selecVehicle: MutableState<VehicleItem?> get() = _selecVehicle
 
+
+    private val _groupedProperties = MutableLiveData<Map<String, List<Pair<String, Any>>>>()
+    val groupedProperties: LiveData<Map<String, List<Pair<String, Any>>>> = _groupedProperties
+
+    var showGroupContent by mutableStateOf(false)
+    var showVehicleDetails by mutableStateOf(true)
+
+//    val listaNombresVehiculos: List<String>
+//        get() = listaVehiculos.value.map { it.name }
+
+    var searchText by mutableStateOf("")
+
     init {
-        //  fetchVehiclesForCountryAndRank()
-        //    getAllVehicles()
+        Log.e("MyTag", "init****************")
+         getAllVehicles()
+
     }
 
-    private fun getAllVehicles() {
+    fun getAllVehicles() {
         viewModelScope.launch {
             try {
                 for (country in LIST_COUNTRY) {
@@ -105,7 +123,6 @@ class MyViewModel @Inject constructor(private val repository: MyRepository) : Vi
             // Manejar el caso de respuesta no exitosa
         }
     }
-
 
     private fun handleErrorResponse(response: Response<List<RemoteVehiclesItem>>) {
         Log.e("MyTag", "Error fetching vehicle list. Code: ${response.code()}")
@@ -226,9 +243,6 @@ class MyViewModel @Inject constructor(private val repository: MyRepository) : Vi
         }
     }
 
-    private val _groupedProperties = MutableLiveData<Map<String, List<Pair<String, Any>>>>()
-    val groupedProperties: LiveData<Map<String, List<Pair<String, Any>>>> = _groupedProperties
-
 
     fun groupPropertiesByClassAndPrefix(vehicle: RemoteVehiclesItem) {
         val groupedMap = mutableMapOf<String, MutableList<Pair<String, Any>>>()
@@ -250,18 +264,75 @@ class MyViewModel @Inject constructor(private val repository: MyRepository) : Vi
             }
             // Agrupar por prefijo "train" o "repair"
             if (propertyName.startsWith("repair")) {
-                groupedMap.getOrPut("RepairGroup") { mutableListOf() }
+                groupedMap.getOrPut("Repair") { mutableListOf() }
                     .add((propertyName to propertyValue) as Pair<String, Any>)
             }
             // Agrupar por características en el nombre (por ejemplo, "Br")
             if (propertyName.contains("Br")) {
-                groupedMap.getOrPut("BrGroup") { mutableListOf() }
+                groupedMap.getOrPut("BR") { mutableListOf() }
                     .add((propertyName to propertyValue) as Pair<String, Any>)
             }
         }
-
         _groupedProperties.value = groupedMap
     }
 
+    fun isGrupoVacio(propertyValue: Any): Boolean {
+        return (propertyValue is Collection<*> && propertyValue.isEmpty())
+    }
 
+    fun isAllPropertiesNullOrZeroOrFalse(propertyValue: Any): Boolean {
+        return LIST_CLASS_VEHICLE.any { it == propertyValue::class.simpleName } &&
+                processProperties(propertyValue)
+    }
+
+    // Función genérica para procesar propiedades de cualquier clase
+    private fun processProperties(propertyValue: Any): Boolean {
+        val properties = propertyValue::class.members
+            .filterIsInstance<KProperty1<Any, Any?>>()
+
+        return properties.all { property ->
+            val value = property.get(propertyValue)
+            value == null || value == 0.0 || value == false
+        }
+    }
+
+    val listaFiltradaVehiculos = mutableStateOf(listOf<VehicleItem>())
+
+    // Obtener la lista filtrada según el texto de búsqueda
+    fun getFilteredListBySearch() {
+        listaFiltradaVehiculos.value = listaVehiculos.value.filter { vehiculo ->
+            vehiculo.name.contains(searchText, ignoreCase = true)
+        }
+    }
+
+    // Obtener la lista filtrada según la condición arcadeRB
+    fun getFilteredListByArcadeRB(vehiculoItem: VehicleItem) {
+
+        // Determinar la lista específica según vehiculoItem
+        val listaEspecifica = when (vehiculoItem.type) {
+           in LIST_TYPE_VEHICLE_AIR -> LIST_TYPE_VEHICLE_AIR
+           in LIST_TYPE_VEHICLE_TANK -> LIST_TYPE_VEHICLE_TANK
+           in LIST_TYPE_VEHICLE_NAVAL -> LIST_TYPE_VEHICLE_NAVAL
+            else -> {
+                Log.i("MyTag", "falta este tipo ${vehiculoItem.type}")
+                emptyList()
+            }
+        }
+        Log.i("MyTag", "lista: $listaEspecifica")
+        Log.i("MyTag", "lista sin filtrar: ${listaFiltradaVehiculos.value.size}")
+        // Filtrar los vehículos según la lista específica y la condición de ArcadeBR
+        listaFiltradaVehiculos.value = listaVehiculos.value.filter { vehiculo ->
+
+            val arcadeInRange =
+                vehiculo.arcadeBr in (vehiculoItem.arcadeBr - 1)..(vehiculoItem.arcadeBr + 1)
+            val mismoTipo = vehiculo.type in listaEspecifica
+            Log.i("MyTag", "evaluando...: ${vehiculo.arcadeBr}-$arcadeInRange ")
+            Log.i("MyTag", "evaluando...: ${vehiculo.type}-$mismoTipo ")
+            arcadeInRange && mismoTipo
+
+        }
+        Log.i("MyTag", "lista filtrada: ${listaFiltradaVehiculos.value.size}")
+    }
 }
+
+

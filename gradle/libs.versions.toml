@@ -17,6 +17,7 @@ retrofit = "2.9.0"
 navigation-compose = "2.7.6"
 coil-compose = "2.5.0"
 runtime-livedata = "2.7.6"
+material3-android = "1.2.0"
 
 
 [libraries]
@@ -52,6 +53,7 @@ retrofit2-converter-gson = { module = "com.squareup.retrofit2:converter-gson", v
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
 # imagenes
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
+androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3-android" }
 # ViewModel
 # androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-runtime-ktx" }
 

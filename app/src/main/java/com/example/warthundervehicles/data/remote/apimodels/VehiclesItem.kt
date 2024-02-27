@@ -1,6 +1,6 @@
 package com.example.warthundervehicles.data.remote.apimodels
 
-data class RemoteVehiclesItem(
+data class RemoteVehiclesItemsssss(
     val aerodynamics: Aerodynamics,
     val arcadeBr: Double,
     val costGold: Int,

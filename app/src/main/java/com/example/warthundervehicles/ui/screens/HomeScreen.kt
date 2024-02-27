@@ -47,9 +47,10 @@ import java.util.Locale
 
 
 @Composable
-fun HomeScreen(navController: NavHostController,
+fun HomeScreen(
+    navController: NavHostController, viewModel: MyViewModel,
                ) {
-    val viewModel = hiltViewModel<MyViewModel>()
+  //  val viewModel = hiltViewModel<MyViewModel>()
     val vehicles = viewModel.listaVehiculos.value
 
     Surface(
@@ -200,11 +201,10 @@ fun Banderas() {
                     viewModel.limpiarLista()
                     //  if (sele)
                     coroutineScope.launch {
-                 //       viewModel.getAllVehiclesCountry(country)
+                        viewModel.getAllVehiclesCountry(country)
                     }
                 }
         )
-
         Spacer(modifier = Modifier.width(2.dp))
     }
 }

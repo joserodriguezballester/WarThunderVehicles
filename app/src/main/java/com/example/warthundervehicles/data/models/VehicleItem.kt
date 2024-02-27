@@ -1,6 +1,10 @@
 package com.example.warthundervehicles.data.models
 
+import com.example.warthundervehicles.data.remote.apimodels.Aerodynamics
+import com.example.warthundervehicles.data.remote.apimodels.Engine
+
 data class VehicleItem(
+    val aerodynamics: Aerodynamics,
     val identifier: String,
     val imageUrl:String,
     val bandera:Int,
@@ -8,7 +12,7 @@ data class VehicleItem(
     val costGold: Int,
     val country: String,
     val crewTotalCount: Int,
-  //  val engine: EngineX,
+    val engine: Engine,
     val historicalBr: Double,
     val name: String,
     val isGift: Boolean,

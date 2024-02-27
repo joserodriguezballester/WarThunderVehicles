@@ -43,6 +43,8 @@ fun RemoteVehiclesItem.toVehicleItem(): VehicleItem {
   //  val imageUrl = baseUrl + vehicle.identifier + ".png"
 
     return VehicleItem(
+
+        aerodynamics=aerodynamics,
         identifier = identifier,
         imageUrl = "$baseUrl$identifier.png",
         bandera=transformCountry(country),
@@ -50,6 +52,7 @@ fun RemoteVehiclesItem.toVehicleItem(): VehicleItem {
         costGold = costGold,
         country = country,
         crewTotalCount = crewTotalCount,
+        engine=engine,
         historicalBr = historicalBr,
         name = transformName(identifier, prefixes),
         isGift = isGift,
