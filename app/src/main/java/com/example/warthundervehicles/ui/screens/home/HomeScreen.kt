@@ -1,4 +1,5 @@
-package com.example.warthundervehicles.ui.screens
+package com.example.warthundervehicles.ui.screens.home
+
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -6,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-//import androidx.compose.foundation.layout.R
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
@@ -28,29 +28,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-//import com.example.warthundervehicles.Cabecera
-//import com.example.warthundervehicles.Name
-//import com.example.warthundervehicles.VehicleList
+import com.example.warthundervehicles.R
 import com.example.warthundervehicles.data.models.VehicleItem
 import com.example.warthundervehicles.navigation.Routes
 import com.example.warthundervehicles.utils.Constants
 import com.example.warthundervehicles.utils.customToString
+import com.example.warthundervehicles.utils.getGradientBrushForTier
 import com.example.warthundervehicles.utils.transformSiluetas
-import com.example.warthundervehicles.R
 import kotlinx.coroutines.launch
 import transformCountry
 import java.util.Locale
 
-
 @Composable
 fun HomeScreen(
-    navController: NavHostController, viewModel: MyViewModel,
-               ) {
-  //  val viewModel = hiltViewModel<MyViewModel>()
+    navController: NavHostController,
+    viewModel: HomeViewmodel,
+) {
     val vehicles = viewModel.listaVehiculos.value
 
     Surface(
@@ -58,12 +54,16 @@ fun HomeScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        BodyContent(navController,vehicles)
+        BodyContent(navController, vehicles, viewModel)
     }
 }
 
 @Composable
-fun BodyContent(navController: NavHostController, vehicles: List<VehicleItem>) {
+fun BodyContent(
+    navController: NavHostController,
+    vehicles: List<VehicleItem>,
+    viewModel: HomeViewmodel
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -75,16 +75,18 @@ fun BodyContent(navController: NavHostController, vehicles: List<VehicleItem>) {
                 )
             )
     ) {
-        Name()
-        Cabecera()
-        VehicleList(navController,vehicles = vehicles) { selectedVehicle ->
-            Log.i("MyTag","Clic en ${selectedVehicle.identifier}")
-            navController.navigate(Routes.DetailScreen.route+"/${selectedVehicle.identifier}")
+        Title()
+        Menu(viewModel)
+
+        VehicleList(navController, vehicles = vehicles) { selectedVehicle ->
+            Log.i("MyTag", "Clic en ${selectedVehicle.identifier}")
+            navController.navigate(Routes.DetailScreen.route + "/${selectedVehicle.identifier}")
         }
     }
 }
+
 @Composable
-fun Name() {
+fun Title() {
     val aspectRatio = 378f / 179f
     Image(
         painter = painterResource(id = R.drawable.ic_warthunder),
@@ -96,19 +98,20 @@ fun Name() {
         //  .align(Alignment.CenterHorizontally)
     )
 }
+
 @Composable
-fun Cabecera() {
+fun Menu(viewModel: HomeViewmodel) {
     Column() {
-        Tier()
+        Tier(viewModel)
         Spacer(modifier = Modifier.height(8.dp))
-        Country()
+        Country(viewModel)
         Spacer(modifier = Modifier.height(10.dp))
-        Siluetas()
+        Siluetas(viewModel)
     }
 }
 
 @Composable
-fun Siluetas() {
+fun Siluetas(viewModel: HomeViewmodel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -116,17 +119,17 @@ fun Siluetas() {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        SiluetaImages()
+        SiluetaImages(viewModel)
     }
 }
 
 @Composable
-fun SiluetaImages() {
-    val viewModel = hiltViewModel<MyViewModel>()
+fun SiluetaImages(viewModel: HomeViewmodel) {
     val coroutineScope = rememberCoroutineScope()
+    var selectedArmy by remember { mutableStateOf("") }
     val aspectRatio = 330f / 131f
-    for (silueta in Constants.LIST_TYPE_VEHICLE) {
-        val armaSilueta = transformSiluetas(silueta)
+    for (army in Constants.LIST_TYPE_VEHICLE) {
+        val armaSilueta = transformSiluetas(army)
         Image(
             painter = painterResource(armaSilueta),
             contentDescription = "Descripción de la imagen",
@@ -135,14 +138,19 @@ fun SiluetaImages() {
                 .width(80.dp)
                 //      .height(60.dp)
                 .aspectRatio(aspectRatio)// Ajusta la altura según tus necesidades
-                .border(2.dp, Color.White)
+
+                .border(
+                    width = 3.dp,
+                    color = if (selectedArmy == army) Color.Yellow else Color.White
+                )
                 .clickable {
-                    Log.i("MyTag", "clickado Silueta $silueta ")
-                    //  viewModel.limpiarLista()
-                    //  if (sele)
-                    //  coroutineScope.launch {
-                    viewModel.getAllVehiclesArma(silueta)
-                    //  }
+                    Log.i("MyTag", "clickado Silueta $army ")
+                    viewModel.limpiarLista()
+
+                    coroutineScope.launch {
+                        viewModel.clickedGetVehiclesArmy(army)
+                        selectedArmy = army
+                    }
                 }
         )
 
@@ -151,7 +159,7 @@ fun SiluetaImages() {
 }
 
 @Composable
-private fun Country() {
+private fun Country(viewModel: HomeViewmodel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -159,16 +167,16 @@ private fun Country() {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Banderas()
+        Banderas(viewModel)
     }
 }
 
 @Composable
-private fun Tier() {
+private fun Tier(viewModel: HomeViewmodel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp, 2.dp),
+            .padding(2.dp, 2.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -178,62 +186,41 @@ private fun Tier() {
             fontWeight = FontWeight.Bold,
             color = Color.White
         )
-        RepeatSquares()
+        RepeatSquares(viewModel)
     }
 }
 
 @Composable
-fun Banderas() {
-    val viewModel = hiltViewModel<MyViewModel>()
-    val coroutineScope = rememberCoroutineScope()
-    for (country in Constants.LIST_COUNTRY) {
-        val bandera = transformCountry(country)
-        Image(
-            painter = painterResource(bandera),
-            contentDescription = "Descripción de la imagen",
-            modifier = Modifier
-                // .fillMaxWidth()
-                .width(34.dp)
-                .height(25.dp) // Ajusta la altura según tus necesidades
-                .border(2.dp, Color.White)
-                .clickable {
-                    Log.i("MyTag", "clickado Country $country ")
-                    viewModel.limpiarLista()
-                    //  if (sele)
-                    coroutineScope.launch {
-                        viewModel.getAllVehiclesCountry(country)
-                    }
-                }
-        )
-        Spacer(modifier = Modifier.width(2.dp))
-    }
-}
-
-@Composable
-fun RepeatSquares() {
+fun RepeatSquares(viewModel: HomeViewmodel) {
 
     var selectedTier by remember { mutableStateOf(0) }
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        repeat(8) { tier ->
-            Square(tier + 1,
-                isSelected = tier + 1 == selectedTier,
-                onSquareClicked = { clickedTier ->
-                    selectedTier = if (selectedTier == clickedTier) 0 else clickedTier
-                })
+        repeat(9) { tier ->
+            Square(
+                tier,
+                isSelected = tier == selectedTier,
+                viewModel
+            ) { clickedTier ->
+                selectedTier = if (selectedTier == clickedTier) 0 else clickedTier
+            }
             Spacer(modifier = Modifier.width(2.dp))
         }
     }
 }
 
 @Composable
-fun Square(tier: Int, isSelected: Boolean, onSquareClicked: (Int) -> Unit) {
-    val viewModel = hiltViewModel<MyViewModel>()
+fun Square(
+    tier: Int,
+    isSelected: Boolean,
+    viewModel: HomeViewmodel,
+    onSquareClicked: (Int) -> Unit
+) {
     val coroutineScope = rememberCoroutineScope()
     val brush = getGradientBrushForTier(tier)
-    val colTier = getColorForTier(tier)
+//    val colTier = getColorForTier(tier)
     Box(
         modifier = Modifier
             .size(26.dp)
@@ -247,16 +234,18 @@ fun Square(tier: Int, isSelected: Boolean, onSquareClicked: (Int) -> Unit) {
             )
             .clickable {
                 Log.i("MyTag", "clickado $tier : $isSelected")
+                viewModel.tierSelected = tier
+                Log.i("MyTag", "clickado viewModel.tierSelected $viewModel.tierSelected")
                 viewModel.limpiarLista()
                 coroutineScope.launch {
-                    viewModel.getAllVehiclesRank(tier)
+                    viewModel.clickedGetVehiclesRank(tier)
                 }
                 onSquareClicked(tier)
             },
         contentAlignment = Alignment.TopCenter
     ) {
         Text(
-            text = tier.toString(),
+            text = if (tier == 0) "All" else "$tier",
             fontWeight = FontWeight.Bold,
             color = Color.White,
             modifier = Modifier
@@ -265,8 +254,46 @@ fun Square(tier: Int, isSelected: Boolean, onSquareClicked: (Int) -> Unit) {
     }
 }
 
+
 @Composable
-fun VehicleList(navController: NavHostController, vehicles: List<VehicleItem>, onItemClick: (VehicleItem) -> Unit) {
+fun Banderas(viewModel: HomeViewmodel) {
+    val coroutineScope = rememberCoroutineScope()
+    var selectedCountry by remember { mutableStateOf("") }
+//    var isSelected:Boolean=false
+    for (country in Constants.LIST_COUNTRY) {
+        val bandera = transformCountry(country)
+        Image(
+            painter = painterResource(bandera),
+            contentDescription = "Descripción de la imagen",
+            modifier = Modifier
+                // .fillMaxWidth()
+                .width(34.dp)
+                .height(25.dp) // Ajusta la altura según tus necesidades
+                .border(
+                    width = 2.dp,
+                    color = if (selectedCountry == country) Color.Yellow else Color.White
+                )
+                .clickable {
+                    Log.i("MyTag", "clickado Country $country ")
+                    viewModel.limpiarLista()
+                    Log.i("MyTag", " viewModel.limpiarLista()")
+                    coroutineScope.launch {
+                        viewModel.clickedGetVehiclesCountry(country)
+                    }
+                    selectedCountry = country // Marca la bandera como seleccionada
+                    viewModel.countrySelected = country
+                }
+        )
+        Spacer(modifier = Modifier.width(2.dp))
+    }
+}
+
+@Composable
+fun VehicleList(
+    navController: NavHostController,
+    vehicles: List<VehicleItem>,
+    onItemClick: (VehicleItem) -> Unit
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -283,7 +310,7 @@ fun VehicleList(navController: NavHostController, vehicles: List<VehicleItem>, o
 
 @Composable
 fun VehicleCard(vehicle: VehicleItem, onItemClick: (VehicleItem) -> Unit) {
-    val brush = getGradientBrushForTier(vehicle.tier)
+    val brush = getGradientBrushForTier(vehicle.era)
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -352,32 +379,6 @@ fun VehicleCard(vehicle: VehicleItem, onItemClick: (VehicleItem) -> Unit) {
     }
 }
 
-fun getGradientBrushForTier(tier: Int): Brush {
-
-    return when (tier) {
-        1 -> Brush.verticalGradient(listOf(Color.Green, Color(130, 0, 0, 0xFF)))
-        2 -> Brush.verticalGradient(listOf(Color.Yellow, Color(130, 0, 0, 0xFF)))
-        3 -> Brush.verticalGradient(listOf(Color.Red, Color(130, 0, 0, 0xFF)))
-        4 -> Brush.verticalGradient(listOf(Color.Blue, Color(130, 0, 0, 0xFF)))
-        5 -> Brush.verticalGradient(listOf(Color.Magenta, Color(130, 0, 0, 0xFF)))
-        6 -> Brush.verticalGradient(listOf(Color.Gray, Color(130, 0, 0, 0xFF)))
 
 
-        // Añade más casos según tus necesidades
-        else -> Brush.verticalGradient(listOf(Color.White, Color(128, 128, 128, 128)))
-    }
-}
 
-fun getColorForTier(tier: Int): Color {
-    return when (tier) {
-        1 -> Color.Green
-        2 -> Color.Yellow
-        3 -> Color.Red
-        4 -> Color.Blue
-        5 -> Color.Magenta
-        6 -> Color.Gray
-        7 -> Color.Cyan
-        8 -> Color.DarkGray
-        else -> Color.Black
-    }
-}

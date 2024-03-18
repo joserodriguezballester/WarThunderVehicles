@@ -4,6 +4,7 @@ object Constants {
 
     const val BASE_URL = "http://wtvehiclesapi.sgambe.serv00.net/"
     val LIST_COUNTRY = listOf(
+        "all",
         "usa",
         "germany",
         "ussr",
@@ -47,7 +48,11 @@ object Constants {
         "tankdestroyer",
         "spaa"
     )
-
+    val tipoVehicleLists = mapOf(
+        "tank" to LIST_TYPE_VEHICLE_TANK,
+        "plane" to LIST_TYPE_VEHICLE_AIR,
+        "ship" to LIST_TYPE_VEHICLE_NAVAL
+    )
     val LIST_PROPERTIES_VEHICLE = listOf(
         "aerodynamics",
         "ammo",

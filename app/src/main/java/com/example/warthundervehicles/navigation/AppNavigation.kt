@@ -8,23 +8,26 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.warthundervehicles.ui.screens.DetailScreen
-import com.example.warthundervehicles.ui.screens.HomeScreen
-import com.example.warthundervehicles.ui.screens.MyViewModel
+import com.example.warthundervehicles.ui.screens.detail.DetailScreen
+import com.example.warthundervehicles.ui.screens.detail.DetailViewmodel
+import com.example.warthundervehicles.ui.screens.home.HomeScreen
+import com.example.warthundervehicles.ui.screens.home.HomeViewmodel
 
 @Composable
 fun AppNavigation() {
     val navController= rememberNavController()
 
     // Obtener una instancia del ViewModel
-    val viewModel: MyViewModel = hiltViewModel()
-
+  //  val viewModel: MyViewModel = hiltViewModel()
+    val homeViewModel:HomeViewmodel= hiltViewModel()
+    val detailViewmodel: DetailViewmodel = hiltViewModel()
     NavHost(
+
         navController = navController,
         startDestination = Routes.FirstScreen.route
     ) {
         composable(Routes.FirstScreen.route) {
-            HomeScreen(navController = navController,viewModel=viewModel)
+            HomeScreen(navController = navController,viewModel=homeViewModel)
         }
         composable(Routes.DetailScreen.route+ "/{identifier}",
             arguments = listOf(
@@ -35,7 +38,7 @@ fun AppNavigation() {
                it.arguments?.getString("identifier")
             }
             if (identifier != null) {
-                DetailScreen(navController = navController,viewModel=viewModel, identifier)
+                DetailScreen(navController = navController,viewModel=detailViewmodel, identifier)
             }
         }
     }
