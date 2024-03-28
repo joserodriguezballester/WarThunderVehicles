@@ -63,9 +63,9 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
-  //  implementation (libs.androidx.runtime.livedata)
+    //  implementation (libs.androidx.runtime.livedata)
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
-    implementation ("androidx.compose.runtime:runtime-livedata:1.1.0")
+    implementation("androidx.compose.runtime:runtime-livedata:1.1.0")
 
 
     //Hilt
@@ -85,8 +85,16 @@ dependencies {
     // Navegacion
     implementation(libs.androidx.navigation.compose)
     // ViewModel Compose
-   // implementation(libs.androidx.lifecycle.viewmodel.compose)
+    // implementation(libs.androidx.lifecycle.viewmodel.compose)
 
+    //Room
+//    implementation(libs.androidx.room.runtime)
+//    annotationProcessor(libs.androidx.room.compiler)
+
+    val room_version = "2.6.1" // check latest version from docs
+
+    implementation ("androidx.room:room-ktx:$room_version")
+    kapt ("androidx.room:room-compiler:$room_version")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
@@ -101,3 +109,4 @@ dependencies {
 kapt {
     correctErrorTypes = true
 }
+kapt "androidx.room:room-compiler:2.6.1"

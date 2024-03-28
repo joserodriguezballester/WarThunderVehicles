@@ -5,9 +5,12 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.warthundervehicles.data.models.VehicleItem
+import com.example.warthundervehicles.data.local.dao.MachineDao
+import com.example.warthundervehicles.data.remote.models.VehicleItem
 import com.example.warthundervehicles.data.remote.apimodels.version2.RemoteVehicleListItem
+import com.example.warthundervehicles.data.repository.MachineRepository
 import com.example.warthundervehicles.data.repository.MyRepository
+import com.example.warthundervehicles.modelsApp.Machine
 import com.example.warthundervehicles.utils.Constants.LIST_COUNTRY
 import com.example.warthundervehicles.utils.Constants.tipoVehicleLists
 import com.example.warthundervehicles.utils.Resource
@@ -18,7 +21,11 @@ import toVehicleItem
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewmodel @Inject constructor(private val repository: MyRepository) : ViewModel() {
+class HomeViewmodel @Inject constructor(
+    private val repository: MyRepository,
+    private val machineDao: MachineDao
+) : ViewModel() {
+    val machineRepository = MachineRepository(machineDao)
 
     private val _myListaVehiculosRemotos = mutableStateOf<List<RemoteVehicleListItem>>(emptyList())
     private val _listaVehiculos = mutableStateOf<List<VehicleItem>>(emptyList())
@@ -40,6 +47,12 @@ class HomeViewmodel @Inject constructor(private val repository: MyRepository) : 
         viewModelScope.launch {
             val result: Resource<List<RemoteVehicleListItem>> = repository.getVehiclesList(1000)
             handler(result)
+        }
+    }
+
+    fun inserMachines(machine:Machine){
+        viewModelScope.launch {
+            machineRepository.insertMachine(machine = machine)
         }
     }
 

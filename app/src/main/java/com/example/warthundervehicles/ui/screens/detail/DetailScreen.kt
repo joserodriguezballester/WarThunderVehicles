@@ -30,7 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.warthundervehicles.data.models.VehicleItem
+import com.example.warthundervehicles.data.remote.models.VehicleItem
 
 import com.example.warthundervehicles.utils.Resource
 import com.example.warthundervehicles.utils.customToList

@@ -32,13 +32,14 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.warthundervehicles.R
-import com.example.warthundervehicles.data.models.VehicleItem
+import com.example.warthundervehicles.data.remote.models.VehicleItem
 import com.example.warthundervehicles.navigation.Routes
 import com.example.warthundervehicles.utils.Constants
 import com.example.warthundervehicles.utils.customToString
 import com.example.warthundervehicles.utils.getGradientBrushForTier
 import com.example.warthundervehicles.utils.transformSiluetas
 import kotlinx.coroutines.launch
+import toMachine
 import transformCountry
 import java.util.Locale
 
@@ -80,6 +81,7 @@ fun BodyContent(
 
         VehicleList(navController, vehicles = vehicles) { selectedVehicle ->
             Log.i("MyTag", "Clic en ${selectedVehicle.identifier}")
+            viewModel.inserMachines(selectedVehicle.toMachine())
             navController.navigate(Routes.DetailScreen.route + "/${selectedVehicle.identifier}")
         }
     }

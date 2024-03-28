@@ -3,8 +3,7 @@ package com.example.warthundervehicles.data.repository
 
 import NewRemoteVehicle
 import android.util.Log
-import com.example.warthundervehicles.data.remote.MyApi
-import com.example.warthundervehicles.data.remote.apimodels.version2.RemoteVehicle
+import com.example.warthundervehicles.data.remote.api.MyApi
 
 import com.example.warthundervehicles.data.remote.apimodels.version2.RemoteVehicleListItem
 

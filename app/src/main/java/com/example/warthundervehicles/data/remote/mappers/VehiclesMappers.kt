@@ -1,9 +1,9 @@
 import com.example.warthundervehicles.R
-import com.example.warthundervehicles.data.models.VehicleItem
+import com.example.warthundervehicles.data.remote.models.VehicleItem
 import com.example.warthundervehicles.data.remote.apimodels.version2.Engine
 import com.example.warthundervehicles.data.remote.apimodels.version2.RemoteVehicleListItem
+import com.example.warthundervehicles.modelsApp.Machine
 import java.util.Locale
-
 
 
 fun transformCountry(country: String): Int {
@@ -22,6 +22,7 @@ fun transformCountry(country: String): Int {
     )
     return banderas[country] ?: 0
 }
+
 //
 fun RemoteVehicleListItem.toVehicleItem(): VehicleItem {
     val prefixes = listOf(
@@ -41,14 +42,14 @@ fun RemoteVehicleListItem.toVehicleItem(): VehicleItem {
     )
     val baseUrl =
         "http://wtvehiclesapi.sgambe.serv00.net/assets/images/"
-    val beginUrl= "http://"
-  //  val imageUrl = baseUrl + vehicle.identifier + ".png"
+    val beginUrl = "http://"
+    //  val imageUrl = baseUrl + vehicle.identifier + ".png"
 
     return VehicleItem(
-        aerodynamics =aerodynamics,
-       identifier = identifier,
-    //    imageUrl = "$baseUrl$identifier.png",
-        bandera =transformCountry(country),
+        aerodynamics = aerodynamics,
+        identifier = identifier,
+        //    imageUrl = "$baseUrl$identifier.png",
+        bandera = transformCountry(country),
         arcadeBr = arcade_br,
         geCost = ge_cost,
         country = country,
@@ -56,15 +57,15 @@ fun RemoteVehicleListItem.toVehicleItem(): VehicleItem {
         name = transformName(identifier, prefixes),
         isGift = is_gift,
         isPremium = is_premium,
-    //    releaseDate =release_date,
+        //    releaseDate =release_date,
         reqExp = req_exp,
         simulationBr = simulator_br,
         type = vehicle_type,
         value = value,
-       // imageUrl = "$baseUrl$identifier.png",
-        imageUrl = beginUrl+ images.image,
-        imagen2Url = beginUrl+ images.techtree,
-        era =era,
+        // imageUrl = "$baseUrl$identifier.png",
+        imageUrl = beginUrl + images.image,
+        imagen2Url = beginUrl + images.techtree,
+        era = era,
         vel_max = 0,
     )
 }
@@ -82,7 +83,7 @@ private fun transformName(identifier: String, prefixes: List<String>): String {
     }
 }
 
-fun NewRemoteVehicle.toVehicle():VehicleItem{
+fun NewRemoteVehicle.toVehicle(): VehicleItem {
     val prefixes = listOf(
         "ussr_destroyer_",
         "ussr_cruiser_",
@@ -100,14 +101,14 @@ fun NewRemoteVehicle.toVehicle():VehicleItem{
     )
     val baseUrl =
         "http://wtvehiclesapi.sgambe.serv00.net/assets/images/"
-    val beginUrl= "http://"
+    val beginUrl = "http://"
     //  val imageUrl = baseUrl + vehicle.identifier + ".png"
 
     return VehicleItem(
-        aerodynamics =aerodynamics,
+        aerodynamics = aerodynamics,
         identifier = identifier,
         //    imageUrl = "$baseUrl$identifier.png",
-        bandera =transformCountry(country),
+        bandera = transformCountry(country),
         arcadeBr = arcade_br,
         geCost = ge_cost,
         country = country,
@@ -121,9 +122,17 @@ fun NewRemoteVehicle.toVehicle():VehicleItem{
         type = vehicle_type,
         value = value,
         // imageUrl = "$baseUrl$identifier.png",
-        imageUrl = beginUrl+ images.image,
-        imagen2Url = beginUrl+ images.techtree,
-        era =era,
+        imageUrl = beginUrl + images.image,
+        imagen2Url = beginUrl + images.techtree,
+        era = era,
         vel_max = engine!!.max_speed,
+    )
+}
+
+fun VehicleItem.toMachine(): Machine {
+    return Machine(
+        name = name,
+        identifier = identifier,
+        imagen = imageUrl,
     )
 }

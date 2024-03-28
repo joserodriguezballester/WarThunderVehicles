@@ -1,4 +1,4 @@
-package com.example.warthundervehicles.data.models
+package com.example.warthundervehicles.data.remote.models
 
 import com.example.warthundervehicles.data.remote.apimodels.version2.Aerodynamics
 
