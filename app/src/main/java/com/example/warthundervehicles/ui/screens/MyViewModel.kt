@@ -1,32 +1,6 @@
 package com.example.warthundervehicles.ui.screens
 
 
-import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.example.warthundervehicles.data.local.dao.MachineDao
-import com.example.warthundervehicles.data.remote.models.VehicleItem
-import com.example.warthundervehicles.data.remote.apimodels.version2.RemoteVehicleListItem
-import com.example.warthundervehicles.data.repository.MyRepository
-import com.example.warthundervehicles.utils.Constants
-import com.example.warthundervehicles.utils.Constants.LIST_CLASS_VEHICLE
-import com.example.warthundervehicles.utils.Constants.LIST_TYPE_VEHICLE
-import com.example.warthundervehicles.utils.Constants.LIST_TYPE_VEHICLE_AIR
-import com.example.warthundervehicles.utils.Constants.LIST_TYPE_VEHICLE_NAVAL
-import com.example.warthundervehicles.utils.Constants.LIST_TYPE_VEHICLE_TANK
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.hilt.android.lifecycle.HiltViewModel
-import retrofit2.Response
-
-import javax.inject.Inject
-import kotlin.reflect.KProperty1
-import kotlin.reflect.full.declaredMemberProperties
 //@AssistedFactory
 //interface MyViewModelFactory {
 //    fun create(machineDao: MachineDao): MyViewModel1

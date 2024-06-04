@@ -58,3 +58,4 @@ crearemos una sealed class que recibe route de tipo String;
 estará formada por objetos (cada screen) de tipo AppScreen con un string como ruta
 ### Crear AppNavigation
 Sera de tipo composable y en el NavHost Definimos las pantallas a donde navegamos
+

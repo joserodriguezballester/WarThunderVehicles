@@ -11,7 +11,7 @@ import com.example.warthundervehicles.utils.Resource
 import retrofit2.Response
 
 
-class MyRepositoryImpl(private val myApi: MyApi) : MyRepository {
+class RemoteRepositoryImpl(private val myApi: MyApi) : RemoteRepository {
 
 
     override suspend fun getVehicle(identifier: String): Resource<NewRemoteVehicle> {
@@ -43,11 +43,18 @@ class MyRepositoryImpl(private val myApi: MyApi) : MyRepository {
     }
 
 
+//    override suspend fun getVehicles(
+//        limit: Int,
+//    ): Resource<List<RemoteVehicleListItem>> {
+//        return myApi.getVehiclesRemote(limit)
+//    }
+// cambio en RemoteRepositoryImpl
     override suspend fun getVehicles(
         limit: Int,
     ): Resource<List<RemoteVehicleListItem>> {
         return myApi.getVehiclesRemote(limit)
     }
+
 
 //    override suspend fun getAllVehiclesCountry(
 //        country: String,
@@ -120,19 +127,17 @@ class MyRepositoryImpl(private val myApi: MyApi) : MyRepository {
     }
 
 
-    override suspend fun getAllVehiclesRemoteCountryRank(
+    override suspend fun getVehiclesRemoteCountryRank(
         limit: Int,
         country: String,
         rank: Int
     ): Resource<List<RemoteVehicleListItem>> {
         val response = try {
             myApi.getAllVehiclesCountryRank(country, rank)
-
         } catch (e: Exception) {
             return Resource.Error("getAllVehiclesCountryRank An unknown error occured.")
         }
         return Resource.Success(response)
-
     }
 
 }

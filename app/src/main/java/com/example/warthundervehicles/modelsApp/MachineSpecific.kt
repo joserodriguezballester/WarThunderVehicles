@@ -1,12 +1,11 @@
-
+package com.example.warthundervehicles.modelsApp
 
 import com.example.warthundervehicles.data.remote.apimodels.version2.Aerodynamics
 import com.example.warthundervehicles.data.remote.apimodels.version2.vehicle.Engine
 import com.example.warthundervehicles.data.remote.apimodels.version2.vehicle.Images
 import com.example.warthundervehicles.data.remote.apimodels.version2.vehicle.WeaponX
-import java.util.Date
 
-data class NewRemoteVehicle(
+data class MachineSpecific(
     val aerodynamics: Aerodynamics?, // JSON nulo
     val arcade_br: Double, //
     val country: String, //
@@ -49,15 +48,15 @@ data class NewRemoteVehicle(
     val vehicle_type: String, //
     val version: String?,
     val versions: List<String>, //
- //   val versions: List<String>,
- //   val weapons: List<WeaponX>? //JSON nulo
- //   val modifications: List<Modification>?, //(JSON)
- //   val presets: List<Preset>?, //Json nulo
-  //   val customizable_presets: List<Any>?,
+    //   val versions: List<String>,
+    //   val weapons: List<WeaponX>? //JSON nulo
+    //   val modifications: List<Modification>?, //(JSON)
+    //   val presets: List<Preset>?, //Json nulo
+    //   val customizable_presets: List<Any>?,
     val release_date: Any?, // Date
+
     val customizable_presets: Any?,
     val weapons: List<WeaponX>?, //JSON nulo
     val modifications: Any?, //(JSON)
     val presets: Any?, //Json nulo
-
 )

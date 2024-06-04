@@ -303,7 +303,6 @@ fun VehicleList(
     ) {
         items(vehicles) { vehicle ->
             VehicleCard(vehicle = vehicle) { clickedVehicle ->
-                Log.i("MyTag", "Click en ${clickedVehicle.identifier}")
                 onItemClick(clickedVehicle)
             }
         }

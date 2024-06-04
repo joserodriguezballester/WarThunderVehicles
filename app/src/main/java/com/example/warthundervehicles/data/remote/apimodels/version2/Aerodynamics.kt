@@ -11,3 +11,4 @@ data class Aerodynamics(
     val wing_area: Double,
     val wingspan: Double
 )
+

@@ -1,5 +1,6 @@
 package com.example.warthundervehicles.utils
 
+import android.util.Log
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.example.warthundervehicles.R
@@ -11,6 +12,13 @@ import com.example.warthundervehicles.ui.theme.Tier5
 import com.example.warthundervehicles.ui.theme.Tier6
 import com.example.warthundervehicles.ui.theme.Tier7
 import com.example.warthundervehicles.ui.theme.Tier8
+import com.example.warthundervehicles.ui.theme.bomber
+import com.example.warthundervehicles.ui.theme.divebomber
+import com.example.warthundervehicles.ui.theme.figther
+import com.example.warthundervehicles.ui.theme.stormovik
+import com.example.warthundervehicles.utils.Constants.LIST_TYPE_VEHICLE_AIR
+import com.example.warthundervehicles.utils.Constants.LIST_TYPE_VEHICLE_NAVAL
+import com.example.warthundervehicles.utils.Constants.LIST_TYPE_VEHICLE_TANK
 import java.util.Locale
 
 fun Any?.customToString(): String {
@@ -31,7 +39,6 @@ fun Any?.customToList(): List<String> {
 }
 
 
-
 fun transformSiluetas(type: String): Int {
     val siluetas = mapOf(
         "tank" to R.drawable.ic_silueta_tank,
@@ -50,15 +57,7 @@ fun textoSinDecimales(statValue: Double): String {
     return textoSinDecimales
 }
 
-// Función para obtener el texto correspondiente a una propiedad, con manejo de caso desconocido
-fun getTextForProperty(property: String): String {
-    return Constants.LIST_AERODYNAMICS_TEXTS.getOrDefault(property, Constants.defaultText)
-}
 
-// Función para obtener la unidad de medida correspondiente a una propiedad, con manejo de caso desconocido
-fun getUnitForProperty(property: String): String {
-    return Constants.LIST_AERODYNAMICS_UNITS.getOrDefault(property, Constants.defaultUnit)
-}
 
 fun getGradientBrushForTier(tier: Int): Brush {
 
@@ -92,6 +91,13 @@ fun getColorForTier(tier: Int?): Color {
     }
 }
 
+// Función para obtener el texto correspondiente a una propiedad, con manejo de caso desconocido
+fun getTextForProperty(property: String): String {
+    return Constants.LIST_AERODYNAMICS_TEXTS.getOrDefault(property, Constants.defaultText)
+}
+
+// // Función para obtener el texto correspondiente a una propiedad, con manejo de caso desconocido
+// Similar a getTextForProperty
 fun parsePropertiesToName(property: String): String {
     return when(property) {
         "empty_weight" -> "Peso en Vacio"
@@ -103,7 +109,49 @@ fun parsePropertiesToName(property: String): String {
         "turn_time" -> "Tiempo de giro"
         "wing_area" -> "Superficie de Ala"
         "wingspan" -> "Envergadura"
-
         else -> ""
     }
 }
+
+// Función para obtener la unidad de medida correspondiente a una propiedad, con manejo de caso desconocido
+fun getUnitForProperty(property: String): String {
+    return Constants.LIST_AERODYNAMICS_UNITS.getOrDefault(property, Constants.defaultUnit)
+}
+fun parseTypeToColor(type:String):Color{
+    return when (type) {
+        "figther" -> figther
+        "stormovik" -> stormovik
+        "bomber" -> bomber
+        "divebomber" -> divebomber
+
+        else -> Color.Yellow
+    }
+}
+
+
+fun getArmyFromType(type: String):String{
+    var army:String=""
+
+    // Filtrar por tipo de vehiculo
+
+    when (type) {
+        in LIST_TYPE_VEHICLE_AIR-> army= Constants.LIST_TYPE_VEHICLE[1]
+        in LIST_TYPE_VEHICLE_TANK-> army= Constants.LIST_TYPE_VEHICLE[0]
+        in LIST_TYPE_VEHICLE_NAVAL->army= Constants.LIST_TYPE_VEHICLE[2]
+    }
+    Log.i("MyTag", "type $type ::$army  ")
+    return army
+}
+
+/*
+#470000
+#720c06
+#9d190c
+#c82513
+#f33119
+#f66343
+#f9946e
+#fcc698
+#fff7c3
+
+ */

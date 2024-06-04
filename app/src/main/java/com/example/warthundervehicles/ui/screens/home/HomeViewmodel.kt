@@ -8,8 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.warthundervehicles.data.local.dao.MachineDao
 import com.example.warthundervehicles.data.remote.models.VehicleItem
 import com.example.warthundervehicles.data.remote.apimodels.version2.RemoteVehicleListItem
-import com.example.warthundervehicles.data.repository.MachineRepository
-import com.example.warthundervehicles.data.repository.MyRepository
+import com.example.warthundervehicles.data.repository.LocalRepository
+import com.example.warthundervehicles.data.repository.RemoteRepository
 import com.example.warthundervehicles.modelsApp.Machine
 import com.example.warthundervehicles.utils.Constants.LIST_COUNTRY
 import com.example.warthundervehicles.utils.Constants.tipoVehicleLists
@@ -22,10 +22,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewmodel @Inject constructor(
-    private val repository: MyRepository,
-    private val machineDao: MachineDao
+    private val repository: RemoteRepository,
+    private val machineDao: MachineDao,
+ //  private val localBD:Boolean
 ) : ViewModel() {
-    val machineRepository = MachineRepository(machineDao)
+    val machineRepository = LocalRepository(machineDao)
 
     private val _myListaVehiculosRemotos = mutableStateOf<List<RemoteVehicleListItem>>(emptyList())
     private val _listaVehiculos = mutableStateOf<List<VehicleItem>>(emptyList())
@@ -39,8 +40,9 @@ class HomeViewmodel @Inject constructor(
     var armySelected: String = "all"
 
     init {
-        //  getAllVehicles()
+      //    getAllVehicles()
         getVehicles()
+    //    Log.i("MyTag","hoooollaa $localBD")
     }
 
     fun getVehicles() {
@@ -59,7 +61,7 @@ class HomeViewmodel @Inject constructor(
     private fun getVehiclesCountryRank(countrySelected: String, tierSelected: Int) {
         viewModelScope.launch {
             val result: Resource<List<RemoteVehicleListItem>> =
-                repository.getAllVehiclesRemoteCountryRank(1000, countrySelected, tierSelected)
+                repository.getVehiclesRemoteCountryRank(1000, countrySelected, tierSelected)
             handler(result)
         }
 

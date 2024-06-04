@@ -4,13 +4,11 @@ import android.content.Context
 import androidx.room.Room
 import com.example.warthundervehicles.data.local.dao.MachineDao
 import com.example.warthundervehicles.data.local.database.MachineDatabase
-import com.example.warthundervehicles.data.repository.MachineRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Inject
 
 @InstallIn(SingletonComponent::class)
 @Module

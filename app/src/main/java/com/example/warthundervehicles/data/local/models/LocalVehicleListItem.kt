@@ -1,8 +1,9 @@
-package com.example.warthundervehicles.data.remote.apimodels.version2
+package com.example.warthundervehicles.data.local.models
 
-import com.example.warthundervehicles.data.remote.apimodels.version2.vehicle.WeaponX
+import com.example.warthundervehicles.data.remote.apimodels.version2.Aerodynamics
+import com.example.warthundervehicles.data.remote.apimodels.version2.Images
 
-data class RemoteVehicleListItem(
+data class LocalVehicleListItem (
     val aerodynamics: Aerodynamics,
     val arcade_br: Double,
     val country: String,
@@ -18,8 +19,5 @@ data class RemoteVehicleListItem(
     val req_exp: Int,
     val simulator_br: Double,
     val value: Int,
-    val vehicle_type: String,
-    val weapons: List<WeaponX>?, //JSON nulo
-    val customizable_presets: Any?,
-
+    val vehicle_type: String
 )

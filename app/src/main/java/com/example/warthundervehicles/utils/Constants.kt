@@ -4,7 +4,6 @@ object Constants {
 
     const val BASE_URL = "http://wtvehiclesapi.sgambe.serv00.net/"
     val LIST_COUNTRY = listOf(
-        "all",
         "usa",
         "germany",
         "ussr",
@@ -85,11 +84,11 @@ object Constants {
         "wingArea",
         "wingspan"
     )
-
+    val PROPERTYUNITS= listOf("Kg  ","m   ","m","Km/h","Kg","m","s","m2","m")
     // Crear un listado con los textos correspondientes a cada propiedad
     val LIST_AERODYNAMICS_TEXTS = mapOf(
         "emptyWeight" to "Peso vacío",
-        "lenght" to "Longitud",
+        "length" to "Longitud",
         "maxAltitude" to "Altitud máxima",
         "maxSpeedAtAlt" to "Velocidad máxima a altitud",
         "maxTakeoffWeight" to "Peso máximo al despegue",
@@ -101,21 +100,36 @@ object Constants {
     val defaultText = "Desconocido"
     // Crear un listado con los unidades correspondientes a cada propiedad
     val LIST_AERODYNAMICS_UNITS = mapOf(
-        "emptyWeight" to "kg",
-        "lenght" to "m",
-        "maxAltitude" to "m",
-        "maxSpeedAtAlt" to "m/s",
-        "maxTakeoffWeight" to "kg",
-        "runwayLenRequired" to "m",
-        "turnTime" to "s",
-        "wingArea" to "m²",
-        "wingspan" to "metros"
+        "empty_weight" to "kg",
+        "length" to "m",
+        "max_altitude" to "m",
+        "max_speed_at_altitude" to "km/h",
+        "max_takeoff_weight" to "kg",
+        "runway_length_required" to "m",
+        "turn_time" to "s",
+        "wing_area" to "m²",
+        "wingspan" to "m"
     )
     val defaultUnit = "."
 
-
-
-
+    val PREFIXES = listOf(
+        "ussr_destroyer_",
+        "ussr_cruiser_",
+        "ussr_battleship_",
+        "ussr_battlecruiser_",
+        "ussr_",
+        "us_",
+        "germ_",
+        "uk_",
+        "jp_",
+        "it_",
+        "fr_",
+        "sw_",
+        "il_"
+    )
+    val BASEURL =
+        "http://wtvehiclesapi.sgambe.serv00.net/assets/images/"
+    val BEGINurl = "http://"
 
 
 
