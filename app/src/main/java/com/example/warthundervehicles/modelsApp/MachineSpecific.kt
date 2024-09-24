@@ -1,9 +1,10 @@
 package com.example.warthundervehicles.modelsApp
 
 import com.example.warthundervehicles.data.remote.apimodels.version2.Aerodynamics
+import com.example.warthundervehicles.data.remote.apimodels.version2.WeaponX
 import com.example.warthundervehicles.data.remote.apimodels.version2.vehicle.Engine
 import com.example.warthundervehicles.data.remote.apimodels.version2.vehicle.Images
-import com.example.warthundervehicles.data.remote.apimodels.version2.vehicle.WeaponX
+//import com.example.warthundervehicles.data.remote.apimodels.version2.vehicle.WeaponX
 
 data class MachineSpecific(
     val aerodynamics: Aerodynamics?, // JSON nulo

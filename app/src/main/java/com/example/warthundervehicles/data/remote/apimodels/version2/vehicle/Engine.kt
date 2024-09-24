@@ -5,5 +5,6 @@ data class Engine(
     val max_reverse_speed: Int,
     val max_rpm: Int,
     val max_speed: Int,
-    val min_rpm: Int
+    val min_rpm: Int,
+    val max_speed_rb_sb:Int
 )

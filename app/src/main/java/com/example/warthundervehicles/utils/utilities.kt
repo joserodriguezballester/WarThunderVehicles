@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.example.warthundervehicles.R
+import com.example.warthundervehicles.data.remote.apimodels.version2.WeaponX
 import com.example.warthundervehicles.ui.theme.Tier1
 import com.example.warthundervehicles.ui.theme.Tier2
 import com.example.warthundervehicles.ui.theme.Tier3
@@ -29,6 +30,7 @@ fun Any?.customToString(): String {
         else -> "Tipo no válido"
     }
 }
+
 fun Any?.customToList(): List<String> {
     return when (this) {
         is String -> listOf(this)
@@ -58,18 +60,17 @@ fun textoSinDecimales(statValue: Double): String {
 }
 
 
-
 fun getGradientBrushForTier(tier: Int): Brush {
 
     return when (tier) {
-        1 -> Brush.verticalGradient(listOf( Tier1,Color.Red))
-        2 -> Brush.verticalGradient(listOf( Tier2,Color.Red))
-        3 -> Brush.verticalGradient(listOf( Tier3,Color.Red))
-        4 -> Brush.verticalGradient(listOf( Tier4,Color.Red))
-        5 -> Brush.verticalGradient(listOf( Tier5,Color.Red))
-        6 -> Brush.verticalGradient(listOf( Tier6,Color.Red))
-        7 -> Brush.verticalGradient(listOf( Tier7,Color.Red))
-        8 -> Brush.verticalGradient(listOf( Tier8,Color.Red))
+        1 -> Brush.verticalGradient(listOf(Tier1, Color.Red))
+        2 -> Brush.verticalGradient(listOf(Tier2, Color.Red))
+        3 -> Brush.verticalGradient(listOf(Tier3, Color.Red))
+        4 -> Brush.verticalGradient(listOf(Tier4, Color.Red))
+        5 -> Brush.verticalGradient(listOf(Tier5, Color.Red))
+        6 -> Brush.verticalGradient(listOf(Tier6, Color.Red))
+        7 -> Brush.verticalGradient(listOf(Tier7, Color.Red))
+        8 -> Brush.verticalGradient(listOf(Tier8, Color.Red))
 
 
         // Añade más casos según tus necesidades
@@ -99,7 +100,7 @@ fun getTextForProperty(property: String): String {
 // // Función para obtener el texto correspondiente a una propiedad, con manejo de caso desconocido
 // Similar a getTextForProperty
 fun parsePropertiesToName(property: String): String {
-    return when(property) {
+    return when (property) {
         "empty_weight" -> "Peso en Vacio"
         "length" -> "Longitud"
         "max_altitude" -> "Altitud Maxima"
@@ -117,7 +118,8 @@ fun parsePropertiesToName(property: String): String {
 fun getUnitForProperty(property: String): String {
     return Constants.LIST_AERODYNAMICS_UNITS.getOrDefault(property, Constants.defaultUnit)
 }
-fun parseTypeToColor(type:String):Color{
+
+fun parseTypeToColor(type: String): Color {
     return when (type) {
         "figther" -> figther
         "stormovik" -> stormovik
@@ -129,19 +131,44 @@ fun parseTypeToColor(type:String):Color{
 }
 
 
-fun getArmyFromType(type: String):String{
-    var army:String=""
+fun getArmyFromType(type: String): String {
+    var army: String = ""
 
     // Filtrar por tipo de vehiculo
 
     when (type) {
-        in LIST_TYPE_VEHICLE_AIR-> army= Constants.LIST_TYPE_VEHICLE[1]
-        in LIST_TYPE_VEHICLE_TANK-> army= Constants.LIST_TYPE_VEHICLE[0]
-        in LIST_TYPE_VEHICLE_NAVAL->army= Constants.LIST_TYPE_VEHICLE[2]
+        in LIST_TYPE_VEHICLE_AIR -> army = Constants.LIST_TYPE_VEHICLE[1]
+        in LIST_TYPE_VEHICLE_TANK -> army = Constants.LIST_TYPE_VEHICLE[0]
+        in LIST_TYPE_VEHICLE_NAVAL -> army = Constants.LIST_TYPE_VEHICLE[2]
     }
     Log.i("MyTag", "type $type ::$army  ")
     return army
 }
+
+
+fun intToRoman(num: Int): String {
+    val romanNumerals = listOf(
+        Pair(1000, "M"), Pair(900, "CM"), Pair(500, "D"), Pair(400, "CD"),
+        Pair(100, "C"), Pair(90, "XC"), Pair(50, "L"), Pair(40, "XL"),
+        Pair(10, "X"), Pair(9, "IX"), Pair(5, "V"), Pair(4, "IV"), Pair(1, "I")
+    )
+
+    var number = num
+    val stringBuilder = StringBuilder()
+
+    for ((value, symbol) in romanNumerals) {
+        while (number >= value) {
+            stringBuilder.append(symbol)
+            number -= value
+        }
+    }
+    return stringBuilder.toString()
+}
+
+fun MiLog(msg: String) {
+    Log.i("MyTag", msg)
+}
+
 
 /*
 #470000

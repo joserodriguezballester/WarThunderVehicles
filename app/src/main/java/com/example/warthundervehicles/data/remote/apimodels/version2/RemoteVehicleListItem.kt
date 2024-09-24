@@ -1,6 +1,6 @@
 package com.example.warthundervehicles.data.remote.apimodels.version2
 
-import com.example.warthundervehicles.data.remote.apimodels.version2.vehicle.WeaponX
+//import com.example.warthundervehicles.data.remote.apimodels.version2.vehicle.WeaponX
 
 data class RemoteVehicleListItem(
     val aerodynamics: Aerodynamics,

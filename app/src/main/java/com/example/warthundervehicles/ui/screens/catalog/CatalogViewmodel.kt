@@ -1,6 +1,7 @@
 package com.example.warthundervehicles.ui.screens.catalog
 
 import android.util.Log
+import androidx.compose.material3.Text
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -25,7 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CatalogViewmodel @Inject constructor(
-    private val repository: RemoteRepository,
+    private val remoteRepository: RemoteRepository,
     private val localRepository: LocalRepository,
     private val dataRepository: DataRepository,
 ) : ViewModel() {
@@ -46,10 +47,15 @@ class CatalogViewmodel @Inject constructor(
     var loadError = mutableStateOf("")
     var isLoading = mutableStateOf(false)
 
+    val listArma = mutableListOf<String>()
+
     fun PedirVehiculos(list_countries: List<String>, list_tiers: List<Int>) {
         list_countries.forEachIndexed { countryIndex, country ->
             list_tiers.forEachIndexed { tierIndex, tier ->
-                Log.e("MyTag", "country [$countryIndex]: $country, tier [$tierIndex]: $tier")
+                Log.e(
+                    "MyTag",
+                    "CatalogViewmodel country [$countryIndex]: $country, tier [$tierIndex]: $tier"
+                )
                 getVehiclesCountryRank(country, tier)
             }
         }
@@ -58,7 +64,7 @@ class CatalogViewmodel @Inject constructor(
     private fun getVehiclesCountryRank(countrySelected: String, tierSelected: Int) {
         viewModelScope.launch {
             val result: Resource<List<Machine>> =
-                   //  repository.getVehiclesRemoteCountryRank(1000, countrySelected, tierSelected)
+                //  repository.getVehiclesRemoteCountryRank(1000, countrySelected, tierSelected)
                 dataRepository.getVehiclesCountryRank(countrySelected, tierSelected)
             handler(result)
         }
@@ -69,8 +75,6 @@ class CatalogViewmodel @Inject constructor(
         when (result) {
             is Resource.Success -> {
                 Log.e("MyTag", "Resource.Success ${result.data!!}")
-           //     listaVehiculosRemotos.value = result.data!!
-           //     processListRemoteToListLocal(listaVehiculosRemotos)
                 processResultToListLocal(result.data)
             }
 
@@ -97,14 +101,22 @@ class CatalogViewmodel @Inject constructor(
         }
     }
 
-    private fun addVehicleToList(machine: Machine, listToUpdate: MutableState<List<MachineListItem>>) {
+    private fun addVehicleToList(
+        machine: Machine,
+        listToUpdate: MutableState<List<MachineListItem>>
+    ) {
         val updatedList = listToUpdate.value.toMutableList()
         updatedList += machine.toMachineListItem()
         listToUpdate.value = updatedList
+
+        viewModelScope.launch {
+            mostrarArmamento(machine.identifier)
+        }
+
     }
 
     private fun processListRemoteToListLocal(listaVehiculosRemotos: MutableState<List<Machine>>) {
-        for (machine in listaVehiculosRemotos.value){
+        for (machine in listaVehiculosRemotos.value) {
             addVehicleToList(machine.toMachineListItem())
         }
         Log.i("MyTag", "Total Vehicles: ${listaVehiculos.value.size}")
@@ -112,32 +124,63 @@ class CatalogViewmodel @Inject constructor(
 
     // Función para añadir elementos a la lista
     private fun addVehicleToList(machine: MachineListItem) {
+        Log.i("MyTag", "addVehicleToList***********")
+
         _listaVehiculos.value += listOf(machine)
+        viewModelScope.launch {
+            mostrarArmamento(machine.identifier)
+        }
     }
 
-//    private fun processResultToListLocal(machineList: List<Machine>) {
-//        for (machine in machineList) {
-//            // averiguar tipo de vehiculo
-//            when (machine.vehicle_type) {
-//                in LIST_TYPE_VEHICLE_TANK -> addVehicleToTankList(machine.toMachineListItem())
-//                in LIST_TYPE_VEHICLE_NAVAL -> addVehicleToNavalList(machine.toMachineListItem())
-//                in LIST_TYPE_VEHICLE_AIR ->addVehicleToAirList(machine.toMachineListItem())
-//            }
-//            Log.i("MyTag", "Total Vehicles handler: ${listaVehiculos.value.size}")
-//        }
-//    }
-//    private fun addVehicleToTankList(machine: MachineListItem) {
-//        _listaTank.value += listOf(machine)
-//    }
-//    private fun addVehicleToNavalList(machine: MachineListItem) {
-//        _listNaval.value += listOf(machine)
-//    }
-//    private fun addVehicleToAirList(machine: MachineListItem) {
-//        _listAir.value += listOf(machine)
-//    }
+    private suspend fun mostrarArmamento(identifier: String) {
+        Log.i("MyTag", "mostrarArmamentot***********")
+
+        val result = remoteRepository.getVehicle(identifier = identifier)
+        when (result) {
+            is Resource.Success -> {
+                val machine = result.data
+                if (machine != null) {
+
+                    //     Log.e("MyTagz", "machine ${machine.identifier} ${machine.weapons}")
+                    machine.weapons?.forEachIndexed { index, weapon ->
+                        Log.i("Mytagz", "**-** ${machine.weapons[index].name}")
+//                        Log.i(
+//                            "Mytagz",
+//                            "**** ${weapon.count} ${weapon.weapon_type} ${weapon.ammos[0].caliber * 1000} mm"
+//                        )
+//
+//                        // Comprobación adicional para evitar nulos
+                        val weaponName = machine.weapons[index].name
+                        if (weaponName !in listArma) {
+                            listArma.add(weaponName)
+                            Log.i("Mytagz", "Añadido a listArma: $weaponName")
+                        } else {
+                            Log.i("Mytagz", "Ya está en listArma: $weaponName")
+                        }
+                    }
+                } else {
+                    Log.i("Mytagz", "Machine es nulo")
+                }
+                Log.i("Mytagz", "listArma**-** ${listArma}")
 
 
+//
+//                Log.i("Mytagz", "listArma**-** ${listArma}")
+//
+            }
 
 
+            is Resource.Error -> {
+                Log.e("MyTag", " Resource.error ${result.message!!}")
+                loadError.value = result.message!!
+                isLoading.value = false
+            }
+
+            is Resource.Loading -> {
+                Log.e("MyTag", "Resource.Loading")
+            }
+        }
+    }
 
 }
+

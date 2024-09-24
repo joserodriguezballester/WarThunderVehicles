@@ -148,12 +148,13 @@ fun MachineCard(vehicle:MachineListItem, onItemClick: (MachineListItem) -> Unit)
                 )
                 Text(
                     text = vehicle.type.customToString().uppercase(Locale.ROOT),
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.headlineSmall, // Color vino,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1, // Limita a una línea
-                    overflow = TextOverflow.Ellipsis
-
+                    overflow = TextOverflow.Ellipsis,
+       //             color = Color(0xFF800020)
                 )
+
                 Text(
                     text = "AB:" + vehicle.arcade_br,
                     style = MaterialTheme.typography.headlineSmall,

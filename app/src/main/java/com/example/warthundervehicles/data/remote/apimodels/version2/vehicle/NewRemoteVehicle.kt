@@ -1,9 +1,10 @@
 
 
 import com.example.warthundervehicles.data.remote.apimodels.version2.Aerodynamics
+import com.example.warthundervehicles.data.remote.apimodels.version2.WeaponX
 import com.example.warthundervehicles.data.remote.apimodels.version2.vehicle.Engine
 import com.example.warthundervehicles.data.remote.apimodels.version2.vehicle.Images
-import com.example.warthundervehicles.data.remote.apimodels.version2.vehicle.WeaponX
+//import com.example.warthundervehicles.data.remote.apimodels.version2.vehicle.WeaponX
 import java.util.Date
 
 data class NewRemoteVehicle(
@@ -11,7 +12,6 @@ data class NewRemoteVehicle(
     val arcade_br: Double, //
     val country: String, //
     val crew_total_count: Int, // ¿que es?
-
     val engine: Engine?, //(JSON)
     val era: Int, //
     val event: String?, // (Any)

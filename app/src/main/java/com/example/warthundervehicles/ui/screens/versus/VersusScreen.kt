@@ -249,8 +249,12 @@ fun VehiculoBaseProperties(
                     propertyName = propertyName + propertyValue + " / " + propertyValueRival + " m"
                     propertyValue = miVehiculo.vel_max.toString()
                     propertyValueRival = vehiculoRival.vel_max.toString()
-                }
 
+                    Log.i(
+                        "MyTag",
+                        "max_speed_at_altitude::"+ miVehiculo.vel_max.toString()+"**"+ vehiculoRival.vel_max.toString()
+                    )
+                }
                 // VehicleProperties(propertyName, propertyValue, PROPERTYUNITS[index])
                 VehiclePropertiesRival(
                     propertyName,
@@ -258,7 +262,6 @@ fun VehiculoBaseProperties(
                     propertyValueRival,
                     propertyUnit
                 )
-
                 Spacer(modifier = Modifier.height(3.dp))
             }
         }

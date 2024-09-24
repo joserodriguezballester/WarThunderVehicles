@@ -11,8 +11,12 @@
   - Tier
   - Pais
   - Tipo de Vehiculo
-- Los muestra en una Lista
-- Muestra detalle y caracteristicas de aviones
 
+- Los muestra en una Lista
+
+- Muestra detalle y caracteristicas de aviones
+- ![Vista_lista](pantallazo2.png)
+- Compara dos aviones
+- - ![Vista_Comparativa](pantallazo3.png)
 
 #### Agradecimiento a Sgambe33 y su API https://github.com/Sgambe33/WTVehiclesAPI 

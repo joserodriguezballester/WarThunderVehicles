@@ -1,7 +1,8 @@
 package com.example.warthundervehicles.data.remote.models
 
 import com.example.warthundervehicles.data.remote.apimodels.version2.Aerodynamics
-import com.example.warthundervehicles.data.remote.apimodels.version2.vehicle.WeaponX
+import com.example.warthundervehicles.data.remote.apimodels.version2.WeaponX
+// import com.example.warthundervehicles.data.remote.apimodels.version2.vehicle.WeaponX
 
 
 data class VehicleItem(

@@ -6,6 +6,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.warthundervehicles.data.remote.apimodels.version2.WeaponX
 import com.example.warthundervehicles.data.repository.DataRepository
 import com.example.warthundervehicles.data.repository.LocalRepository
 
@@ -140,8 +141,9 @@ class DetailViewmodel @Inject constructor(
                 val limSupBr: Double = (vehiculo.arcade_br) + 1
                 val limInfRank: Int = if (vehiculo.era > 1) vehiculo.era - 1 else 1
                 val limSupRank: Int = if (vehiculo.era < 8) vehiculo.era + 1 else 8
-                val ranks = if ((limSupRank - limInfRank) == 0) listOf(limInfRank, limSupRank)
-                else listOf(limInfRank, limInfRank + 1, limSupRank)
+               // val ranks = if ((limSupRank - limInfRank) == 0) listOf(limInfRank, limSupRank)
+             //   else listOf(limInfRank, limInfRank + 1, limSupRank)
+                val ranks =  listOf(limInfRank, limInfRank + 1, limSupRank)
                 val preListaVehiculos = mutableListOf<Machine>()
                 val listaVehiculos = mutableListOf<Machine>()
                 val type = getArmyFromType(vehiculo.vehicle_type)
@@ -186,41 +188,9 @@ class DetailViewmodel @Inject constructor(
                     onListaVehiculosReady(listaNombresVehiculos)
 
                 }
-
-
             } catch (e: Exception) {
                 // Maneja cualquier excepción que pueda ocurrir
             }
         }
     }
-
 }
-
-
-//    fun getVehicle(identifier: String) {
-//        viewModelScope.launch {
-//            val result: Resource<NewRemoteVehicle> = repository.getVehicle(identifier)
-//            when (result) {
-//                is Resource.Success -> {
-//                    Log.e("MyTag", "Resource.Success ${result.data!!}")
-//                    _selectedVehicle.value = result.data!!
-//
-//                }
-//
-//                is Resource.Error -> {
-//                    Log.e("MyTag", " Resource.error ${result.message!!}")
-//                    loadError.value = result.message!!
-//                    isLoading.value = false
-//
-//                }
-//                is Resource.Loading -> {
-//                    Log.e("MyTag", "Resource.Loading")
-//
-//                }
-//
-//
-//            }
-//
-//        }
-//
-//    }

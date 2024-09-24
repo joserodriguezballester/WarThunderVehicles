@@ -84,10 +84,12 @@ fun NewRemoteVehicle.toVehicle(): VehicleItem {
         simulationBr = simulator_br,
         type = vehicle_type,
         value = value,
-        imageUrl = BEGINurl + images.image,
+       // imageUrl = BEGINurl + images.image, modificada 22/09
+        imageUrl =  images.image,
         imagen2Url = BEGINurl + images.techtree,
         era = era,
-        vel_max = engine!!.max_speed,
+      //  vel_max = engine!!.max_speed,
+        vel_max = engine!!.max_speed_rb_sb,
         weapons = weapons,
         customizable_presets = customizable_presets
     )
